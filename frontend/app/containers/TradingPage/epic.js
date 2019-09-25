@@ -6,11 +6,24 @@ import {
   delay,
   tap,
 } from 'rxjs/operators';
-import { ofType } from 'redux-observable';
+import { ofType, combineEpics } from 'redux-observable';
 import { webSocket } from 'rxjs/webSocket';
 
-import { saveBookSnapshot, updateBooks } from './actions';
-import { SUBSCRIBE_BOOKS, UNSUBSCRIBE_BOOKS } from './constants';
+import {
+  saveBookSnapshot,
+  updateBooks,
+  saveTickerSnapshot,
+  saveTradeSnapshot,
+  updateTrades,
+} from './actions';
+import {
+  SUBSCRIBE_BOOKS,
+  UNSUBSCRIBE_BOOKS,
+  SUBSCRIBE_TICKERS,
+  UNSUBSCRIBE_TICKERS,
+  SUBSCRIBE_TRADES,
+  UNSUBSCRIBE_TRADES,
+} from './constants';
 
 const subscribeBooks = action$ =>
   action$.pipe(
@@ -51,4 +64,77 @@ const subscribeBooks = action$ =>
     }),
   );
 
-export default subscribeBooks;
+const subscribeTickers = action$ =>
+  action$.pipe(
+    ofType(SUBSCRIBE_TICKERS),
+    switchMap(() => {
+      const tickers$ = webSocket({
+        url: 'wss://api-pub.bitfinex.com/ws/2',
+      });
+      tickers$.subscribe();
+      tickers$.next({
+        event: 'subscribe',
+        channel: 'ticker',
+        symbol: 'tBTCUSD',
+      });
+      return tickers$.pipe(
+        map(payload => {
+          if (Array.isArray(payload) && Array.isArray(payload[1])) {
+            return saveTickerSnapshot(payload);
+          }
+          return { type: 'empty' };
+        }),
+        takeUntil(action$.ofType(UNSUBSCRIBE_TICKERS)),
+        retryWhen(errors =>
+          errors.pipe(
+            tap(err => {
+              console.error('Got error', err);
+            }),
+            delay(3000),
+          ),
+        ),
+      );
+    }),
+  );
+
+const subscribeTrades = action$ =>
+  action$.pipe(
+    ofType(SUBSCRIBE_TRADES),
+    switchMap(() => {
+      const tickers$ = webSocket({
+        url: 'wss://api-pub.bitfinex.com/ws/2',
+      });
+      tickers$.subscribe();
+      tickers$.next({
+        event: 'subscribe',
+        channel: 'trades',
+        symbol: 'tBTCUSD',
+      });
+      return tickers$.pipe(
+        map(payload => {
+          if (Array.isArray(payload)) {
+            if (Array.isArray(payload[1][0])) {
+              console.log(payload);
+              return saveTradeSnapshot(payload);
+            }
+            if (Array.isArray(payload[2])) {
+              console.log(payload);
+              return updateTrades(payload);
+            }
+          }
+          return { type: 'empty' };
+        }),
+        takeUntil(action$.ofType(UNSUBSCRIBE_TRADES)),
+        retryWhen(errors =>
+          errors.pipe(
+            tap(err => {
+              console.error('Got error', err);
+            }),
+            delay(3000),
+          ),
+        ),
+      );
+    }),
+  );
+
+export default combineEpics(subscribeBooks, subscribeTickers, subscribeTrades);

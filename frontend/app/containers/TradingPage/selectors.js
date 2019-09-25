@@ -12,4 +12,14 @@ const selectBooks = createSelector(
   substate => substate.toJS().books,
 );
 
-export { selectTradingPageDomain, selectBooks };
+const selectTickers = createSelector(
+  selectTradingPageDomain,
+  substate => substate.toJS().tickers,
+);
+
+const selectTrades = createSelector(
+  selectTradingPageDomain,
+  substate => substate.toJS().trades,
+);
+
+export { selectTradingPageDomain, selectBooks, selectTickers, selectTrades };

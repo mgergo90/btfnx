@@ -5,7 +5,6 @@
  */
 
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import { compose } from 'redux';
 
@@ -15,19 +14,19 @@ import reducer from './reducer';
 import epic from './epic';
 
 import BooksTable from './booksTable';
+import Tickers from './tickers';
+import TradesTable from './tradesTable';
 
-const TradingPage = props => (
+const TradingPage = () => (
   <div>
     <Helmet>
       <title>Trading</title>
     </Helmet>
     <BooksTable />
+    <Tickers />
+    <TradesTable />
   </div>
 );
-
-TradingPage.propTypes = {
-  subscribeBooks: PropTypes.func.isRequired,
-};
 
 const withReducer = injectReducer({ key: 'tradingPage', reducer });
 const withEpic = injectEpic(epic);

@@ -80,6 +80,7 @@
     "loadable-components": "2.2.3",
     "lodash": "^4.17.15",
     "minimist": "1.2.0",
+    "moment": "^2.24.0",
     "prop-types": "15.6.2",
     "pusher-js": "^5.0.0",
     "qs": "^6.7.0",
