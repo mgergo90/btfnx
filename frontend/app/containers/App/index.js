@@ -13,15 +13,10 @@ import { Helmet } from 'react-helmet';
 import { withStyles } from '@material-ui/core/styles';
 import { Switch, Route, withRouter } from 'react-router-dom';
 import { compose } from 'redux';
-import { connect } from 'react-redux';
 
 import injectReducer from 'utils/injectReducer';
 import Loader from 'components/Loader';
-import { createStructuredSelector } from 'reselect';
-import Header from './header';
 import reducer from './reducer';
-
-import { selectInitialize } from './selectors';
 
 // https://github.com/ReactTraining/react-router/issues/6420
 Route.propTypes.component = PropTypes.oneOfType([
@@ -55,20 +50,11 @@ export const App = ({ classes }) => (
 
 App.propTypes = {
   classes: PropTypes.instanceOf(Object),
-  initialize: PropTypes.bool.isRequired,
 };
 
 const withReducer = injectReducer({ key: 'global', reducer });
 
-const mapStateToProps = createStructuredSelector({
-  initialize: selectInitialize,
-});
-
-const withConnect = connect(mapStateToProps);
-
-export default withRouter(
-  compose(
-    withReducer,
-    withConnect,
-  )(withStyles(styles)(App)),
-);
+export default compose(
+  withRouter,
+  withReducer,
+)(withStyles(styles)(App));

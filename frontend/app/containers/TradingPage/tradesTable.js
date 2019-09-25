@@ -1,5 +1,10 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
+import moment from 'moment';
+import { createStructuredSelector } from 'reselect';
+import { connect } from 'react-redux';
+import { compose } from 'redux';
+
 import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -7,69 +12,10 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import { createStructuredSelector } from 'reselect';
-import moment from 'moment';
 
-import { connect } from 'react-redux';
-import { Typography, Toolbar, Button } from '@material-ui/core';
-import { compose } from 'redux';
+import TableToolbar from 'components/ToolBar';
 import { selectTrades } from './selectors';
 import { subscribeTrades, unSubscribeTrades } from './actions';
-
-const toolbarStyles = theme => ({
-  root: {
-    paddingRight: theme.spacing.unit,
-  },
-  spacer: {
-    flex: '1 1 100%',
-  },
-  actions: {
-    display: 'flex',
-    flexDirection: 'row',
-    color: theme.palette.text.secondary,
-  },
-  title: {
-    flex: '0 0 auto',
-  },
-  button: {
-    margin: theme.spacing.unit,
-  },
-});
-
-let EnhancedTableToolbar = ({ classes, ...props }) => (
-  <Toolbar className={classes.root}>
-    <div className={classes.title}>
-      <Typography variant="h6" id="tableTitle">
-        Trades
-      </Typography>
-    </div>
-    <div className={classes.spacer} />
-    <div className={classes.actions}>
-      <Button
-        variant="contained"
-        className={classes.button}
-        onClick={props.subscribeTrades}
-      >
-        Subscribe
-      </Button>
-      <Button
-        variant="contained"
-        className={classes.button}
-        onClick={props.unSubscribeTrades}
-      >
-        UnSubscribe
-      </Button>
-    </div>
-  </Toolbar>
-);
-
-EnhancedTableToolbar.propTypes = {
-  subscribeTrades: PropTypes.func.isRequired,
-  unSubscribeTrades: PropTypes.func.isRequired,
-  classes: PropTypes.object.isRequired,
-};
-
-EnhancedTableToolbar = withStyles(toolbarStyles)(EnhancedTableToolbar);
 
 const styles = theme => ({
   root: {
@@ -92,7 +38,11 @@ const TradesTable = props => {
   }, []);
   return (
     <Paper className={props.classes.root}>
-      <EnhancedTableToolbar {...props} />
+      <TableToolbar
+        title="Trades"
+        subscribe={props.subscribeTrades}
+        unSubscribe={props.unSubscribeTrades}
+      />
       <div className={props.classes.tableWrapper}>
         <Table className={props.classes.table} aria-labelledby="tableTitle">
           <TableHead>
@@ -129,7 +79,8 @@ const TradesTable = props => {
 TradesTable.propTypes = {
   classes: PropTypes.object.isRequired,
   data: PropTypes.instanceOf(Array).isRequired,
-  subscribeBooks: PropTypes.func.isRequired,
+  subscribeTrades: PropTypes.func.isRequired,
+  unSubscribeTrades: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({

@@ -16,6 +16,7 @@ import {
   saveTradeSnapshot,
   updateTrades,
 } from './actions';
+
 import {
   SUBSCRIBE_BOOKS,
   UNSUBSCRIBE_BOOKS,
@@ -101,24 +102,22 @@ const subscribeTrades = action$ =>
   action$.pipe(
     ofType(SUBSCRIBE_TRADES),
     switchMap(() => {
-      const tickers$ = webSocket({
+      const trades$ = webSocket({
         url: 'wss://api-pub.bitfinex.com/ws/2',
       });
-      tickers$.subscribe();
-      tickers$.next({
+      trades$.subscribe();
+      trades$.next({
         event: 'subscribe',
         channel: 'trades',
         symbol: 'tBTCUSD',
       });
-      return tickers$.pipe(
+      return trades$.pipe(
         map(payload => {
           if (Array.isArray(payload)) {
             if (Array.isArray(payload[1][0])) {
-              console.log(payload);
               return saveTradeSnapshot(payload);
             }
             if (Array.isArray(payload[2])) {
-              console.log(payload);
               return updateTrades(payload);
             }
           }

@@ -1,69 +1,15 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { createStructuredSelector } from 'reselect';
+import { connect } from 'react-redux';
+import { compose } from 'redux';
+
 import { withStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
-import { createStructuredSelector } from 'reselect';
 
-import { connect } from 'react-redux';
-import { Typography, Toolbar, Button } from '@material-ui/core';
-import { compose } from 'redux';
+import TableToolbar from 'components/ToolBar';
 import { selectTickers } from './selectors';
 import { subscribeTickers, unSubscribeTickers } from './actions';
-
-const toolbarStyles = theme => ({
-  root: {
-    paddingRight: theme.spacing.unit,
-  },
-  spacer: {
-    flex: '1 1 100%',
-  },
-  actions: {
-    display: 'flex',
-    flexDirection: 'row',
-    color: theme.palette.text.secondary,
-  },
-  title: {
-    flex: '0 0 auto',
-  },
-  button: {
-    margin: theme.spacing.unit,
-  },
-});
-
-let EnhancedTableToolbar = ({ classes, ...props }) => (
-  <Toolbar className={classes.root}>
-    <div className={classes.title}>
-      <Typography variant="h6" id="tableTitle">
-        Ticker
-      </Typography>
-    </div>
-    <div className={classes.spacer} />
-    <div className={classes.actions}>
-      <Button
-        variant="contained"
-        className={classes.button}
-        onClick={props.subscribeTickers}
-      >
-        Subscribe
-      </Button>
-      <Button
-        variant="contained"
-        className={classes.button}
-        onClick={props.unSubscribeTickers}
-      >
-        UnSubscribe
-      </Button>
-    </div>
-  </Toolbar>
-);
-
-EnhancedTableToolbar.propTypes = {
-  subscribeTickers: PropTypes.func.isRequired,
-  unSubscribeTickers: PropTypes.func.isRequired,
-  classes: PropTypes.object.isRequired,
-};
-
-EnhancedTableToolbar = withStyles(toolbarStyles)(EnhancedTableToolbar);
 
 const styles = theme => ({
   root: {
@@ -83,13 +29,17 @@ const styles = theme => ({
   },
 });
 
-const BooksTable = props => {
+const Tickers = props => {
   useEffect(() => {
     props.subscribeTickers();
   }, []);
   return (
     <Paper className={props.classes.root}>
-      <EnhancedTableToolbar {...props} />
+      <TableToolbar
+        title="Ticker"
+        subscribe={props.subscribeTickers}
+        unSubscribe={props.unSubscribeTickers}
+      />
       <div>
         <span className={props.classes.data}>BTC/USD</span>
         <span className={props.classes.data}>{props.data[0]}</span>
@@ -108,10 +58,11 @@ const BooksTable = props => {
   );
 };
 
-BooksTable.propTypes = {
+Tickers.propTypes = {
   classes: PropTypes.object.isRequired,
   data: PropTypes.instanceOf(Array).isRequired,
-  subscribeBooks: PropTypes.func.isRequired,
+  subscribeTickers: PropTypes.func.isRequired,
+  unSubscribeTickers: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
@@ -132,4 +83,4 @@ const mapDispatchToProps = dispatch => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withStyles(styles)(BooksTable));
+)(withStyles(styles)(Tickers));
