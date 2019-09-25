@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Loader /> Expect to have unit tests specified 1`] = `
+<div
+  class="Loader-root-1"
+>
+  <div
+    class="MuiCircularProgress-root-3 MuiCircularProgress-colorPrimary-6 MuiCircularProgress-indeterminate-5"
+    role="progressbar"
+    style="width:40px;height:40px"
+  >
+    <svg
+      class="MuiCircularProgress-svg-8"
+      viewBox="22 22 44 44"
+    >
+      <circle
+        class="MuiCircularProgress-circle-9 MuiCircularProgress-circleIndeterminate-11"
+        cx="44"
+        cy="44"
+        fill="none"
+        r="20.2"
+        stroke-width="3.6"
+      />
+    </svg>
+  </div>
+</div>
+`;

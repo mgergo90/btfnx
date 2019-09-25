@@ -1,0 +1,10 @@
+import { mergeMap, map } from 'rxjs/operators';
+import { ofType } from 'redux-observable';
+
+const {{ camelCase name }} = action$ =>
+  action$.pipe(
+    ofType('EPIC_ACTION'),
+    mergeMap(map(() => {})),
+  );
+
+export default {{ camelCase name }};

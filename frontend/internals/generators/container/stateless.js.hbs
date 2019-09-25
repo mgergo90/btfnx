@@ -1,0 +1,99 @@
+/**
+*
+* {{properCase name }}
+*
+*/
+
+import React from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+{{#if wantHeaders}}
+import { Helmet } from 'react-helmet';
+{{/if}}
+{{#if wantMessages}}
+import { FormattedMessage } from 'react-intl';
+{{/if}}
+{{#if wantActionsAndReducer}}
+import { createStructuredSelector } from 'reselect';
+{{/if}}
+import { compose } from 'redux';
+
+{{#if wantSaga}}
+import injectSaga from 'utils/injectSaga';
+{{/if}}
+{{#if wantEpic}}
+import injectEpic from 'utils/injectEpic';
+{{/if}}
+{{#if wantActionsAndReducer}}
+import injectReducer from 'utils/injectReducer';
+import makeSelect{{properCase name}} from './selectors';
+import reducer from './reducer';
+{{/if}}
+{{#if wantEpic}}
+import epic from './epic';
+{{/if}}
+{{#if wantSaga}}
+import saga from './saga';
+{{/if}}
+{{#if wantMessages}}
+import messages from './messages';
+{{/if}}
+
+const {{ properCase name }} = () => {
+  const name = '{{properCase name}}';
+  return (
+    <div>
+      {{#if wantHeaders}}
+      <Helmet>
+        <title>{name}</title>
+        <meta name="description" content={`Description of ${name}`} />
+      </Helmet>
+      {{/if}}
+      {{#if wantMessages}}
+      <FormattedMessage {...messages.header} />
+      {{/if}}
+      <h1>{name}</h1>
+    </div>
+  );
+};
+
+{{ properCase name }}.propTypes = {
+  dispatch: PropTypes.func.isRequired,
+};
+
+{{#if wantActionsAndReducer}}
+const mapStateToProps = createStructuredSelector({
+  {{ camelCase name }}: makeSelect{{properCase name}}(),
+});
+{{/if}}
+
+const mapDispatchToProps = dispatch => ({
+  dispatch,
+});
+
+{{#if wantActionsAndReducer}}
+const withConnect = connect(mapStateToProps, mapDispatchToProps);
+
+const withReducer = injectReducer({ key: '{{ camelCase name }}', reducer });
+{{else}}
+const withConnect = connect(null, mapDispatchToProps);
+{{/if}}
+{{#if wantSaga}}
+const withSaga = injectSaga({ key: '{{ camelCase name }}', saga });
+{{/if}}
+{{#if wantEpic}}
+const withEpic = injectEpic(epic);
+{{/if}}
+
+export default compose(
+{{#if wantActionsAndReducer}}
+  withReducer,
+{{/if}}
+{{#if wantSaga}}
+  withSaga,
+{{/if}}
+{{#if wantEpic}}
+  withEpic,
+{{/if}}
+  withConnect,
+)({{ properCase name }});

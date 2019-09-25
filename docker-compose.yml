@@ -1,0 +1,22 @@
+version: "3.4"
+
+services:
+  frontend:
+    build:
+      context: ./
+      dockerfile: build/frontend/Dockerfile
+      target: base
+    volumes:
+      - "./frontend:/srv/app"
+    ports:
+      - 3000:3000
+    depends_on:
+      - yarn
+    command: yarn run start
+
+  yarn:
+    image: node:carbon-jessie
+    volumes:
+      - "./frontend:/srv/app"
+    working_dir: /srv/app
+    command: yarn install
